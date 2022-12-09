@@ -121,45 +121,25 @@ module user_proj_example #(
 
 endmodule
 
-module counter #(
-    parameter BITS = 32
-)(
-    input clk,
-    input reset,
-    input valid,
-    input [3:0] wstrb,
-    input [BITS-1:0] wdata,
-    input [BITS-1:0] la_write,
-    input [BITS-1:0] la_input,
-    output ready,
-    output [BITS-1:0] rdata,
-    output [BITS-1:0] count
-);
-    reg ready;
-    reg [BITS-1:0] count;
-    reg [BITS-1:0] rdata;
-
-    always @(posedge clk) begin
-        if (reset) begin
-            count <= 0;
-            ready <= 0;
-        end else begin
-            ready <= 1'b0;
-            if (~|la_write) begin
-                count <= count + 1;
-            end
-            if (valid && !ready) begin
-                ready <= 1'b1;
-                rdata <= count;
-                if (wstrb[0]) count[7:0]   <= wdata[7:0];
-                if (wstrb[1]) count[15:8]  <= wdata[15:8];
-                if (wstrb[2]) count[23:16] <= wdata[23:16];
-                if (wstrb[3]) count[31:24] <= wdata[31:24];
-            end else if (|la_write) begin
-                count <= la_write & la_input;
-            end
-        end
+module iiitb_piso (input load, clk, rst,
+             input [7:0] data_in,
+             output reg data_out);
+  
+  // PISO register array to load and shift data
+  reg [7:0] data_reg;
+  
+  always @ (posedge clk or negedge rst) begin
+    if (~rst)
+      data_reg <= 8'h00; // Reset PISO register array on reset
+    else begin
+      
+      // Load the data to the PISO register array and reset the serial data out register
+      if (load)
+      	{data_reg, data_out} <= {data_in, 1'b0};
+      // Shift the loaded data 1 bit right; into the serial data out register
+      else
+      	{data_reg, data_out} <= {1'b0, data_reg[7:0]};
     end
-
-endmodule
-`default_nettype wire
+  end
+  
+endmodule`default_nettype wire
