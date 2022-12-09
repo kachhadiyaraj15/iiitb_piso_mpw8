@@ -142,4 +142,5 @@ module iiitb_piso (input load, clk, rst,
     end
   end
   
-endmodule`default_nettype wire
+endmodule
+`default_nettype wire
