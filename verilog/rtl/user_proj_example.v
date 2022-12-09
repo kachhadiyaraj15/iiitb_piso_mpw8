@@ -83,7 +83,7 @@ module user_proj_example #(
     assign rst = wb_rst_i;
     assign load = io_in[35];
     assign data_in = io_in[34:27];
-    assign io_out = data_out;
+    assign io_out[35] = data_out;
     assign io_oeb = 0;
 
     // IRQ
